@@ -1,0 +1,859 @@
+#!/bin/bash
+############################### VARIABLES ###############################################
+_date=$(date +"%Y-%m-%d_%H-%M-%S")
+_nameWorkDir='SCON-CA'
+_placeWorkDir='/var'
+_SSLconf='openssl.cnf'
+_IndexTXT='index.txt'
+_CRLnumb='crlnumber'
+_CRLfileName='crlSCON'
+_CRLupdteHRS='24'
+_SerialFile='serial'
+_PrivFolder='Private'
+_KeyFolder='Keys'
+_PEMfolder='PEM'
+_CERTfolder='Certificates'
+_CSRfolder='CSR'
+_RootCrt='RootCA.crt'
+_RootCrtExp='365'
+_RootKey='RootCA.key'
+_passPhrase='helloworld'
+_passFile='PW'
+_SSLcnf='#=====================================================================================
+\n      # OpenSSL configuration file.
+\n      # Establish working directory.
+\n      dir = .
+\n      
+\n      [ ca ]
+\n      default_ca    = CA_default
+\n      
+\n      [ CA_default ]
+\n      serial        = $dir/serial
+\n      database      = $dir/index.txt
+\n      new_certs_dir = $dir/PEM
+\n      certificate   = $dir/Certificates/RootCA.crt
+\n      private_key   = $dir/Private/Keys/RootCA.key
+\n      default_days  = 365
+\n      default_md    = md5
+\n      preserve      = no
+\n      email_in_dn   = no
+\n      nameopt       = default_ca
+\n      certopt       = default_ca
+\n      policy        = policy_match
+\n      crlnumber     = $dir/crlnumber
+\n      
+\n      [ policy_match ]
+\n      countryName             = match
+\n      stateOrProvinceName     = optional
+\n      organizationName        = match
+\n      organizationalUnitName  = optional
+\n      commonName              = supplied
+\n      emailAddress            = optional
+\n       
+\n      [ policy_anything ]
+\n      countryName             = optional
+\n      stateOrProvinceName     = optional
+\n      localityName            = optional
+\n      organizationName        = optional
+\n      organizationalUnitName  = optional
+\n      commonName              = supplied
+\n      emailAddress            = optional
+\n      
+\n      [ req ]
+\n      default_bits       = 1024        # Size of keys
+\n      default_keyfile    = key.pem     # name of generated keys
+\n      default_md         = md5         # message digest algorithm
+\n      string_mask        = nombstr     # permitted characters
+\n      distinguished_name = req_distinguished_name
+\n      req_extensions = v3_req
+\n      
+\n      [ req_distinguished_name ]
+\n      # Variable name           Prompt string
+\n      #----------------------   ----------------------------------
+\n      0.organizationName      = Organization Name (company)
+\n      organizationalUnitName  = Organizational Unit Name (department, division)
+\n      emailAddress            = Email Address
+\n      emailAddress_max        = 40
+\n      localityName            = Locality Name (city, district)
+\n      stateOrProvinceName     = State or Province Name (full name)
+\n      countryName             = Country Name (2 letter code)
+\n      countryName_min         = 2
+\n      countryName_max         = 2
+\n      commonName              = Common Name (hostname, IP, or your name)
+\n      commonName_max          = 64
+\n      
+\n      # Default values for the above, for consistency and less typing.
+\n      # Variable name                   Value
+\n      #------------------------------   ------------------------------
+\n      0.organizationName_default      = Sys Consulting Ltd.
+\n      localityName_default            = Sofia
+\n      stateOrProvinceName_default     = Sofia
+\n      countryName_default             = BG
+\n      
+\n      [ v3_ca ]
+\n      basicConstraints       = CA:TRUE
+\n      subjectKeyIdentifier   = hash
+\n      authorityKeyIdentifier = keyid:always,issuer:always
+\n      
+\n      [ v3_req ]
+\n      basicConstraints     = CA:FALSE
+\n      subjectKeyIdentifier = hash
+\n#====================================================================================='
+#########################################################################################
+############################### COLORS ##################################################
+_NORMAL=`echo "\033[37m"`      #White
+_MENU=`echo "\033[36m"`        #Cyan
+_NUMBER=`echo "\033[33m"`      #Yellow
+_GREEN_TEXT=`echo "\033[32m"`  #Green
+_RED_TEXT=`echo "\033[31m"`    #Red
+_BLUE_TEXT=`echo "\033[34m"`   #Blue
+#########################################################################################
+############################### WELCOME SCREEN ##########################################
+clear
+echo -e "${_GREEN_TEXT}≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡"
+echo -e " .--.                  ┬ ┬┌─┐┬  ┌─┐┌─┐┌┬┐┌─┐        "
+echo -e "/.-. '----------.      │││├┤ │  │  │ ││││├┤         "
+echo -e "\'-' .--\"--\"\"-\"-'${_MENU}┌───┐${_GREEN_TEXT} └┴┘└─┘┴─┘└─┘└─┘┴ ┴└─┘ ${_MENU}┌───┐   ${_GREEN_TEXT}"
+echo -e " '--'            ${_MENU}├───┘  Georgi Uzunov © 2014 └───┤  "
+echo -e "                 |  Dreams give desire for life, |  "
+echo -e "                 |  so do not stop dreaming ...  |  "
+echo -e "                 └───────────────────────────────┘  ${_NORMAL}"
+#########################################################################################
+############################### USER AUTHENTICATION #####################################
+read -p "Please enter password to continue: " _passKey
+if [ ! -f $_passFile ]; then
+  echo -e "${_RED_TEXT}Not found $_passFile file${_NORMAL}"
+  while true; do
+  read -p "If you want to continue, system will create a new file. Do you want to continue (Y/N)?" answer
+  case $answer in
+    [Yy]* )
+      while true; do
+      read -p "Do you want to create random password (Y/N)?" answer
+      case $answer in
+        [Yy]* )
+          _rdmPASS=$(cat /dev/urandom | tr -dc A-Za-z0-9 | head -c10)
+          echo $_rdmPASS | openssl enc -aes-128-cbc -a -salt -pass pass:$_passKey  > $_passFile
+          tar -czf $_date-workspace.tar.gz *
+          echo -e "${_BLUE_TEXT}Your password is ${_GREEN_TEXT}$_rdmPASS${_BLUE_TEXT} encrypted with key ${_GREEN_TEXT}$_passKey${_NORMAL}"
+          break;;
+        [Nn]* )
+          echo $_passPhrase | openssl enc -aes-128-cbc -a -salt -pass pass:$_passKey  > $_passFile
+          tar -czf $_date-workspace.tar.gz *
+          echo -e "${_BLUE_TEXT}Your password is ${_GREEN_TEXT}$_passPhrase${_BLUE_TEXT} encrypted with key ${_GREEN_TEXT}$_passKey${_NORMAL}"
+          break;;
+        * ) echo "Please answer yes or no.";;
+      esac
+      done
+      break;;
+    [Nn]* )
+      echo -e "${_RED_TEXT}Goodbye!${_NORMAL}"
+      exit
+      break;;
+    * ) echo "Please answer yes or no.";;
+  esac
+  done
+fi
+_passVar=$(cat $_passFile | openssl enc -aes-128-cbc -a -d -salt -pass pass:$_passKey)
+  if [ "$?" = "0" ]; then
+    #echo $_passVar
+    echo > /dev/null
+  else
+    echo -e "${_RED_TEXT}Goodbye! BAD PASS${_NORMAL}"
+    exit
+  fi
+#########################################################################################
+############################### MENU VISUALIZATION AND PROPERTIES #######################
+show_menu(){
+  echo -e "${_MENU}__________________________________________________  "
+  echo -e "${_MENU}▒ ${_NUMBER} 0) ${_MENU}If needed ${_BLUE_TEXT}create a working directory ${_MENU}      ▒  "
+  echo -e "${_MENU}▒ ${_NUMBER} 1) ${_MENU}Generate the ${_BLUE_TEXT}ROOT ${_MENU}certificate              ▒  "
+  echo -e "${_MENU}▒ ${_NUMBER} 2) ${_MENU}Generate the ${_BLUE_TEXT}SERVER ${_MENU}certificate            ▒  "
+  echo -e "${_MENU}▒ ${_NUMBER} 3) ${_MENU}Generate the ${_BLUE_TEXT}CLIENT ${_MENU}certificate            ▒  "
+  echo -e "${_MENU}▒ ${_NUMBER} R) ${_BLUE_TEXT}REVOKE ${_MENU}certificate                         ▒  "
+  echo -e "${_MENU}▒ ${_NUMBER} i) ${_BLUE_TEXT}PEM ${_MENU}and ${_BLUE_TEXT}CRL ${_MENU}information                    ▒  "
+  echo -e "${_MENU}▒ ${_RED_TEXT}To exit press ${_NUMBER}ENTER ${_RED_TEXT}button ${_MENU}                    ▒  "
+  echo -e "${_MENU}▒________________________________________________▒  "
+  echo -e "${_MENU}Hello $USER, please select one of the above options  "
+  echo -e "${_GREEN_TEXT}≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡"
+  read opt
+}
+function option_picked() {
+  COLOR='\033[01;31m' # bold red
+  RESET='\033[01;37m' # normal white
+  MESSAGE=${@:-"${RESET}Error: No message passed"}
+  echo -e "${COLOR}${MESSAGE}${RESET}"
+}
+show_menu
+while [ opt != '' ]
+  do
+    if [[ $opt = "" ]]; then
+    clear;
+    exit;
+  else
+    case $opt in
+#########################################################################################
+############################### OPTION 0 FROM MENU ######################################
+0) clear;
+option_picked "${_GREEN_TEXT}_____|${_BLUE_TEXT}CREATE A WORKING DIRECTORY ${_GREEN_TEXT}|_____${_NORMAL}";
+cd $_placeWorkDir
+if [ "$?" = "0" ]; then
+  echo -e "${_GREEN_TEXT}Access to: $PWD${_NORMAL}"
+else
+  echo -e "${_RED_TEXT}Can not access $_placeWorkDir${_NORMAL}"
+  echo Please select an existing directory or check permissions in the selected directory.
+  echo This will be your working directory.
+  exit
+fi
+cd $_nameWorkDir
+if [ "$?" = "0" ]; then
+  echo -e "${_GREEN_TEXT}Access to: $PWD${_NORMAL}"
+else
+  echo -e "${_GREEN_TEXT}Create: $_nameWorkDir${_NORMAL}"
+  mkdir $_nameWorkDir
+    if [ "$?" = "0" ]; then
+      cd $_nameWorkDir
+      echo -e "${_GREEN_TEXT}Access to: $PWD${_NORMAL}"
+    else
+      echo -e "${_RED_TEXT}Can not create a directory: $_nameWorkDir. Please check permissions in the selected directory${_NORMAL}"
+      exit
+    fi
+fi
+echo -e "${_GREEN_TEXT}Current list of directories and files:${_NORMAL}"
+echo --------------------------------------
+ls -lh
+echo --------------------------------------
+while true; do
+  read -p "Do you want to create a new user-defined working directory (Y/N)?" _answer
+  case $_answer in
+    [Yy]* )
+      read -p "Please enter a name or leave the field empty: " _DirName
+      echo -e "${_GREEN_TEXT}Create: $_date$_DirName"
+      mkdir $_date$_DirName
+        if [ "$?" = "0" ]; then
+          cd $_date$_DirName
+          echo -e "${_GREEN_TEXT}Your working directory is: $PWD"
+          if [ ! -f $_passFile ]; then
+            echo -e "${_RED_TEXT}Not found $_passFile file${_NORMAL}"
+            while true; do
+            read -p "If you want to continue, system will create a new file. Do you want to continue (Y/N)?" answer
+            case $answer in
+              [Yy]* )
+                while true; do
+                read -p "Do you want to create random password (Y/N)?" answer
+                case $answer in
+                  [Yy]* )
+                    _rdmPASS=$(cat /dev/urandom | tr -dc A-Za-z0-9 | head -c10)
+                    echo $_rdmPASS | openssl enc -aes-128-cbc -a -salt -pass pass:$_passKey  > $_passFile
+                    tar -czf $_date-workspace.tar.gz *
+                    echo -e "${_BLUE_TEXT}Your password is ${_GREEN_TEXT}$_rdmPASS${_BLUE_TEXT} encrypted with key ${_GREEN_TEXT}$_passKey${_NORMAL}"
+                  break;;
+                  [Nn]* )
+                    echo $_passPhrase | openssl enc -aes-128-cbc -a -salt -pass pass:$_passKey  > $_passFile
+                    tar -czf $_date-workspace.tar.gz *
+                    echo -e "${_BLUE_TEXT}Your password is ${_GREEN_TEXT}$_passPhrase${_BLUE_TEXT} encrypted with key ${_GREEN_TEXT}$_passKey${_NORMAL}"
+                    break;;
+                  * ) echo "Please answer yes or no.";;
+                esac
+                done
+                break;;
+              [Nn]* )
+                echo -e "${_RED_TEXT}Goodbye!${_NORMAL}"
+                exit
+                break;;
+              * ) echo "Please answer yes or no.";;
+            esac
+            done
+          fi
+          _passVar=$(cat $_passFile | openssl enc -aes-128-cbc -a -d -salt -pass pass:$_passKey)
+          if [ "$?" = "0" ]; then
+            #echo $_passVar
+            echo > /dev/null
+          else
+            echo -e "${_RED_TEXT}Goodbye! BAD PASS${_NORMAL}"
+            exit
+          fi
+          mkdir -p $_PrivFolder/$_KeyFolder
+          mkdir $_CERTfolder
+          mkdir $_CSRfolder
+          mkdir $_PEMfolder
+          touch $_IndexTXT
+          touch $_CRLnumb
+          echo '01' >$_SerialFile
+          echo '01' >$_CRLnumb
+          echo -e $_SSLcnf >$_SSLconf
+          echo -e "${_GREEN_TEXT}Current list of directories and files:${_NORMAL}"
+          echo --------------------------------------
+          pwd
+          ls -lh
+          echo --------------------------------------
+          break;
+        else
+          echo -e "${_RED_TEXT}Can not create a directory: $_date$_DirName${_NORMAL}"
+          echo -e ""
+          exit
+        fi
+        ;;
+    [Nn]* )
+      break;;
+    * )
+      echo "Please answer yes or no.";;
+  esac
+  done
+show_menu;
+;;
+#########################################################################################
+############################### OPTION 1 FROM MENU ######################################
+1) clear;
+option_picked "${_GREEN_TEXT}_____|${_BLUE_TEXT}GENERATE ROOT CERTIFICATE${_GREEN_TEXT}|_____${_NORMAL}";
+if [ ! -d "$_PrivFolder" ]; then
+  echo -e "${_GREEN_TEXT}Create a directory: $_PrivFolder/$_KeyFolder${_NORMAL}"
+  mkdir -p $_PrivFolder/$_KeyFolder
+fi
+if [ ! -d "$_CERTfolder" ]; then
+  echo -e "${_GREEN_TEXT}Create a directory: $_CERTfolder${_NORMAL}"
+  mkdir $_CERTfolder
+fi
+if [ ! -d "$_CSRfolder" ]; then
+  echo -e "${_GREEN_TEXT}Create a directory: $_CSRfolder${_NORMAL}"
+  mkdir $_CSRfolder
+fi
+if [ ! -d "$_PEMfolder" ]; then
+  echo -e "${_GREEN_TEXT}Create a directory: $_PEMfolder${_NORMAL}"
+  mkdir $_PEMfolder
+fi
+if [ ! -f $_IndexTXT ]; then
+  echo -e "${_GREEN_TEXT}Create a file: $_IndexTXT${_NORMAL}"
+  touch $_IndexTXT
+fi
+if [ ! -f $_CRLnumb ]; then
+  echo -e "${_GREEN_TEXT}Create a file: $_CRLnumb${_NORMAL}"
+  touch $_CRLnumb
+fi
+if [ ! -f $_SerialFile ]; then
+  echo -e "${_GREEN_TEXT}Create a file: $_SerialFile${_NORMAL}"
+  echo '01' >$_SerialFile
+  echo '01' >$_CRLnumb
+fi
+if [ ! -f $_SSLconf ]; then
+  echo -e "${_GREEN_TEXT}Create a file: $_SSLconf${_NORMAL}"
+  echo -e $_SSLcnf >$_SSLconf
+fi
+if [ -f $_PrivFolder/$_KeyFolder/$_RootKey ]; then
+  while true; do
+    echo -e "${_RED_TEXT}He was found: $_PrivFolder/$_KeyFolder/$_RootKey"
+    echo -e "Be careful in your choice!${_NORMAL}"
+    read -p "Do you want to continue (Y/N)?" answer
+    case $answer in
+      [Yy]* ) 
+        gzip $_PrivFolder/$_KeyFolder/$_RootKey
+        mv $_PrivFolder/$_KeyFolder/$_RootKey.gz $_PrivFolder/$_KeyFolder/$_RootKey$_date.gz
+      break ;;
+      [Nn]* ) exit  ;;
+      * ) echo "Please answer yes or no.";;
+    esac
+    done
+fi
+echo -e "${_NUMBER}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo -e "${_BLUE_TEXT}Generate a private key of CA"
+echo -e "${_NUMBER}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${_NORMAL}"
+openssl genrsa -des3 -passout pass:$_passVar -out  $_PrivFolder/$_KeyFolder/$_RootKey 2048
+  if [ "$?" = "0" ]; then
+    echo -e "${_GREEN_TEXT}Private key $_PrivFolder/$_KeyFolder/$_RootKey create successful${_NORMAL}"
+  else
+    echo -e "${_RED_TEXT}ERROR: $?,can not create private key!${_NORMAL}"
+    exit
+  fi
+if [ -f $_PrivFolder/$_KeyFolder/$_RootKey ]; then
+  if [ -f $_CERTfolder/$_RootCrt ]; then
+    while true; do
+      echo -e "${_RED_TEXT}He was found: $_CERTfolder/$_RootCrt${_GREEN_TEXT}"
+      openssl x509 -in $_CERTfolder/$_RootCrt -noout -dates
+      echo -e "${_RED_TEXT}Be careful in your choice!${_NORMAL}"
+      read -p "Do you want to continue (Y/N)?" answer
+      case $answer in
+        [Yy]* ) 
+          gzip $_CERTfolder/$_RootCrt
+          mv $_CERTfolder/$_RootCrt.gz $_CERTfolder/$_RootCrt$_date.gz
+        break ;;
+        [Nn]* ) exit  ;;
+        * ) echo "Please answer yes or no.";;
+      esac
+      done
+  fi
+  echo -e "${_NUMBER}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  echo -e "${_BLUE_TEXT}Generate self-signed certificate of CA"
+  echo -e "${_NUMBER}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${_NORMAL}"
+  openssl req -config $_SSLconf -new -x509 -days $_RootCrtExp -key $_PrivFolder/$_KeyFolder/$_RootKey -passin pass:$_passVar -out $_CERTfolder/$_RootCrt
+  if [ "$?" = "0" ]; then
+    echo -e "${_GREEN_TEXT}Certificate $_CERTfolder/$_RootCrt create successful${_NORMAL}"
+  else
+    echo -e "${_RED_TEXT}ERROR: $?,can not create certificate!${_NORMAL}"
+    exit
+  fi
+fi
+openssl ca -config $_SSLconf -gencrl -crlhours $_CRLupdteHRS -passin pass:$_passVar -out $_CRLfileName.crl
+  if [ "$?" = "0" ]; then
+    echo -e "${_GREEN_TEXT}Generate CRL file $_CRLfileName.crl successful${_NORMAL}"
+  else
+    echo -e "${_RED_TEXT}ERROR generate CRL file $_CRLfileName.crl, code: $?${_NORMAL}"
+  fi
+echo -e '\n'            
+show_menu;
+;;
+#########################################################################################
+############################### OPTION 2 FROM MENU ######################################
+2) clear;
+option_picked "${_GREEN_TEXT}_____|${_BLUE_TEXT}GENERATE SERVER CERTIFICATE${_GREEN_TEXT}|_____${_NORMAL}";
+if [ ! -d "$_PrivFolder" ]; then
+  echo -e "${_GREEN_TEXT}Create a directory: $_PrivFolder/$_KeyFolder${_NORMAL}"
+  mkdir -p $_PrivFolder/$_KeyFolder
+fi
+if [ ! -d "$_CERTfolder" ]; then
+  echo -e "${_GREEN_TEXT}Create a directory: $_CERTfolder${_NORMAL}"
+  mkdir $_CERTfolder
+fi
+if [ ! -d "$_CSRfolder" ]; then
+  echo -e "${_GREEN_TEXT}Create a directory: $_CSRfolder${_NORMAL}"
+  mkdir $_CSRfolder
+fi
+if [ ! -d "$_PEMfolder" ]; then
+  echo -e "${_GREEN_TEXT}Create a directory: $_PEMfolder${_NORMAL}"
+  mkdir $_PEMfolder
+fi
+if [ ! -f $_IndexTXT ]; then
+  echo -e "${_GREEN_TEXT}Create a file: $_IndexTXT${_NORMAL}"
+  touch $_IndexTXT
+fi
+if [ ! -f $_CRLnumb ]; then
+  echo -e "${_GREEN_TEXT}Create a file: $_CRLnumb${_NORMAL}"
+  touch $_CRLnumb
+fi
+if [ ! -f $_SerialFile ]; then
+  echo -e "${_GREEN_TEXT}Create a file: $_SerialFile${_NORMAL}"
+  echo '01' >$_SerialFile
+  echo '01' >$_CRLnumb
+fi
+if [ ! -f $_SSLconf ]; then
+  echo -e "${_GREEN_TEXT}Create a file: $_SSLconf${_NORMAL}"
+  echo -e $_SSLcnf >$_SSLconf
+fi
+if [ ! -f $_PrivFolder/$_KeyFolder/$_RootKey ]; then
+  echo -e "${_RED_TEXT}Can not be found: $_PrivFolder/$_KeyFolder/$_RootKey"
+  echo -e "${_BLUE_TEXT}Please follow step 1 from the main menu${_NORMAL}"
+  exit
+fi
+if [ ! -f $_CERTfolder/$_RootCrt ]; then
+  echo -e "${_RED_TEXT}Can not be found: $_CERTfolder/$_RootCrt"
+  echo -e "${_BLUE_TEXT}Please follow step 1 from the main menu${_NORMAL}"
+  exit
+fi
+echo -e "${_NUMBER}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo -e "${_BLUE_TEXT}Generate private key for the server"
+echo -e "${_NUMBER}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${_NORMAL}"
+read -p "Please enter the name of the private key for the server: " _PKSName
+read -p "Please enter pass phrase for $_PrivFolder/$_KeyFolder/SRV-$_PKSName.key : " _passSRVKey
+if [ -f $_PrivFolder/$_KeyFolder/SRV-$_PKSName.key ]; then
+  while true; do
+  echo -e "${_RED_TEXT}He was found: $_PrivFolder/$_KeyFolder/SRV-$_PKSName.key"
+  echo -e "Be careful in your choice!${_NORMAL}"
+  read -p "Do you want to continue (Y/N)?" answer
+    case $answer in
+      [Yy]* ) 
+        gzip $_PrivFolder/$_KeyFolder/SRV-$_PKSName.key
+        mv $_PrivFolder/$_KeyFolder/SRV-$_PKSName.key.gz $_PrivFolder/$_KeyFolder/SRV-$_PKSName.key$_date.gz
+      break ;;
+      [Nn]* ) exit  ;;
+      * ) echo "Please answer yes or no.";;
+    esac
+    done
+fi
+openssl genrsa -des3 -passout pass:$_passSRVKey -out $_PrivFolder/$_KeyFolder/SRV-$_PKSName.key 2048
+  if [ "$?" = "0" ]; then
+    echo -e "${_GREEN_TEXT}Key $_PrivFolder/$_KeyFolder/SRV-$_PKSName.key generate successful${_NORMAL}"
+  else
+    echo -e "${_RED_TEXT}Can not generate key $_PrivFolder/$_KeyFolder/SRV-$_PKSName.key, ERROR code: $?${_NORMAL}"
+    exit
+  fi
+if [ -f $_CSRfolder/SRV-$_PKSName.csr ]; then
+  while true; do
+    echo -e "${_RED_TEXT}He was found: $_CSRfolder/SRV-$_PKSName.csr"
+    echo -e "Be careful in your choice!${_NORMAL}"
+    read -p "Do you want to continue (Y/N)?" answer
+      case $answer in
+        [Yy]* ) 
+          gzip $_CSRfolder/SRV-$_PKSName.csr
+          mv $_CSRfolder/SRV-$_PKSName.csr.gz $_CSRfolder/SRV-$_PKSName.csr$_date.gz
+        break ;;
+        [Nn]* ) exit  ;;
+        * ) echo "Please answer yes or no.";;
+      esac
+      done
+fi
+echo -e "${_NUMBER}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo -e "${_BLUE_TEXT}Generate CSR for the server"
+echo -e "${_NUMBER}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${_NORMAL}"
+openssl req -config $_SSLconf -new -key $_PrivFolder/$_KeyFolder/SRV-$_PKSName.key -passin pass:$_passSRVKey -out $_CSRfolder/SRV-$_PKSName.csr
+  if [ "$?" = "0" ]; then
+    echo -e "${_GREEN_TEXT}CSR $_CSRfolder/SRV-$_PKSName.csr generate successful${_NORMAL}"
+  else
+    echo -e "${_RED_TEXT}Can not generate $_CSRfolder/SRV-$_PKSName.csr file, ERROR code: $?${_NORMAL}"
+    exit
+  fi
+if [ -f $_CERTfolder/SRV-$_PKSName.crt ]; then
+  while true; do
+    echo -e "${_RED_TEXT}He was found: $_CERTfolder/SRV-$_PKSName.crt"
+    echo -e "Be careful in your choice!${_NORMAL}"
+    read -p "Do you want to continue (Y/N)?" answer
+      case $answer in
+        [Yy]* ) 
+          gzip $_CERTfolder/SRV-$_PKSName.crt
+          mv $_CERTfolder/SRV-$_PKSName.crt.gz $_CERTfolder/SRV-$_PKSName.crt$_date.gz
+        break ;;
+        [Nn]* ) exit  ;;
+        * ) echo "Please answer yes or no.";;
+      esac
+      done
+fi
+echo -e "${_NUMBER}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo -e "${_BLUE_TEXT}Generate server certificate"
+echo -e "${_NUMBER}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${_NORMAL}"
+openssl ca -config $_SSLconf -days $_RootCrtExp -in $_CSRfolder/SRV-$_PKSName.csr -out $_CERTfolder/SRV-$_PKSName.crt -keyfile $_PrivFolder/$_KeyFolder/$_RootKey -passin pass:$_passVar -cert $_CERTfolder/$_RootCrt -policy policy_anything
+  if [ "$?" = "0" ]; then
+    echo -e "${_GREEN_TEXT}Server certificate $_CERTfolder/SRV-$_PKSName.crt generate successful${_NORMAL}"
+  else
+    echo -e "${_RED_TEXT}Can not generate server certificate $_CERTfolder/SRV-$_PKSName.crt, ERROR code: $?${_NORMAL}"
+    exit
+  fi
+openssl ca -config $_SSLconf -gencrl -crlhours $_CRLupdteHRS -passin pass:$_passVar -out $_CRLfileName.crl
+  if [ "$?" = "0" ]; then
+    echo -e "${_GREEN_TEXT}Generate CRL file $_CRLfileName.crl successful${_NORMAL}"
+  else
+    echo -e "${_RED_TEXT}Can not generate CRL file $_CRLfileName.crl, ERROR code: $?${_NORMAL}"
+  fi
+show_menu;
+;;
+#########################################################################################
+############################### OPTION 3 FROM MENU ######################################
+3) clear;
+option_picked "${_GREEN_TEXT}_____|${_BLUE_TEXT}GENERATE CLIENT CERTIFICATE${_GREEN_TEXT}|_____${_NORMAL}";
+if [ ! -d "$_PrivFolder" ]; then
+  echo -e "${_GREEN_TEXT}Create a directory: $_PrivFolder/$_KeyFolder${_NORMAL}"
+  mkdir -p $_PrivFolder/$_KeyFolder
+fi
+if [ ! -d "$_CERTfolder" ]; then
+  echo -e "${_GREEN_TEXT}Create a directory: $_CERTfolder${_NORMAL}"
+  mkdir $_CERTfolder
+fi
+if [ ! -d "$_CSRfolder" ]; then
+  echo -e "${_GREEN_TEXT}Create a directory: $_CSRfolder${_NORMAL}"
+  mkdir $_CSRfolder
+fi
+if [ ! -d "$_PEMfolder" ]; then
+  echo -e "${_GREEN_TEXT}Create a directory: $_PEMfolder${_NORMAL}"
+  mkdir $_PEMfolder
+fi
+if [ ! -f $_IndexTXT ]; then
+  echo -e "${_GREEN_TEXT}Create a file: $_IndexTXT${_NORMAL}"
+  touch $_IndexTXT
+fi
+if [ ! -f $_CRLnumb ]; then
+  echo -e "${_GREEN_TEXT}Create a file: $_CRLnumb${_NORMAL}"
+  touch $_CRLnumb
+fi
+if [ ! -f $_SerialFile ]; then
+  echo -e "${_GREEN_TEXT}Create a file: $_SerialFile${_NORMAL}"
+  echo '01' >$_SerialFile
+  echo '01' >$_CRLnumb
+fi
+if [ ! -f $_SSLconf ]; then
+  echo -e "${_GREEN_TEXT}Create a file: $_SSLconf${_NORMAL}"
+  echo -e $_SSLcnf >$_SSLconf
+fi
+if [ ! -f $_PrivFolder/$_KeyFolder/$_RootKey ]; then
+  echo -e "${_RED_TEXT}Can not be found: $_PrivFolder/$_KeyFolder/$_RootKey${_NORMAL}"
+  echo -e "${_BLUE_TEXT}Please follow step 1 from the main menu${_NORMAL}"
+  exit
+fi
+if [ ! -f $_CERTfolder/$_RootCrt ]; then
+  echo -e "${_RED_TEXT}Can not be found: $_CERTfolder/$_RootCrt${_NORMAL}"
+  echo -e "${_BLUE_TEXT}Please follow step 1 from the main menu${_NORMAL}"
+  exit
+fi
+echo -e "${_NUMBER}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo -e "${_BLUE_TEXT}Generate private key for the client"
+echo -e "${_NUMBER}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${_NORMAL}"
+read -p "Please enter the name of the private key for the client: " _PKCName
+read -p "Please enter pass phrase for $_PrivFolder/$_KeyFolder/CLI-$_PKCName.key : " _passCLIKey
+read -p "Please enter pass phrase for export $_CERTfolder/CLI-$_PKCName.p12 : " _passexpCLIp12
+if [ -f $_PrivFolder/$_KeyFolder/CLI-$_PKCName.key ]; then
+  while true; do
+    echo -e "${_RED_TEXT}He was found: $_PrivFolder/$_KeyFolder/CLI-$_PKCName.key"
+    echo -e "Be careful in your choice!${_NORMAL}"
+    read -p "Do you want to continue (Y/N)?" answer
+      case $answer in
+        [Yy]* ) 
+          gzip $_PrivFolder/$_KeyFolder/CLI-$_PKCName.key
+          mv $_PrivFolder/$_KeyFolder/CLI-$_PKCName.key.gz $_PrivFolder/$_KeyFolder/CLI-$_PKCName.key$_date.gz
+        break ;;
+        [Nn]* ) exit  ;;
+        * ) echo "Please answer yes or no.";;
+      esac
+      done
+fi
+openssl genrsa -des3 -passout pass:$_passCLIKey -out $_PrivFolder/$_KeyFolder/CLI-$_PKCName.key 2048
+  if [ "$?" = "0" ]; then
+    echo -e "${_GREEN_TEXT}Key $_PrivFolder/$_KeyFolder/CLI-$_PKCName.key generate successful${_NORMAL}"
+  else
+    echo -e "${_RED_TEXT}Can not generate key $_PrivFolder/$_KeyFolder/CLI-$_PKCName.key, ERROR code: $?${_NORMAL}"
+    exit
+  fi
+if [ -f $_CSRfolder/CLI-$_PKCName.csr ]; then
+  while true; do
+    echo -e "${_RED_TEXT}He was found: $_CSRfolder/CLI-$_PKCName.csr"
+    echo -e "Be careful in your choice!${_NORMAL}"
+    read -p "Do you want to continue (Y/N)?" answer
+      case $answer in
+        [Yy]* ) 
+          gzip $_CSRfolder/CLI-$_PKCName.csr
+          mv $_CSRfolder/CLI-$_PKCName.csr.gz $_CSRfolder/CLI-$_PKCName.csr$_date.gz
+        break ;;
+        [Nn]* ) exit  ;;
+        * ) echo "Please answer yes or no.";;
+      esac
+      done
+fi
+echo -e "${_NUMBER}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo -e "${_BLUE_TEXT}Generate CSR for the client"
+echo -e "${_NUMBER}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${_NORMAL}"
+openssl req -config $_SSLconf -new -key $_PrivFolder/$_KeyFolder/CLI-$_PKCName.key -passin pass:$_passCLIKey -out $_CSRfolder/CLI-$_PKCName.csr
+  if [ "$?" = "0" ]; then
+    echo -e "${_GREEN_TEXT}CSR $_CSRfolder/CLI-$_PKCName.csr generate successful${_NORMAL}"
+  else
+    echo -e "${_RED_TEXT}Can not generate CSR $_CSRfolder/CLI-$_PKCName.csr, ERROR code: $?${_NORMAL}"
+    exit
+  fi
+if [ -f $_CERTfolder/CLI-$_PKCName.crt ]; then
+  while true; do
+  echo -e "${_RED_TEXT}He was found: $_CERTfolder/CLI-$_PKCName.crt"
+  echo -e "Be careful in your choice!${_NORMAL}"
+  read -p "Do you want to continue (Y/N)?" answer
+    case $answer in
+      [Yy]* ) 
+        gzip $_CERTfolder/CLI-$_PKCName.crt
+        mv $_CERTfolder/CLI-$_PKCName.crt.gz $_CERTfolder/CLI-$_PKCName.crt$_date.gz
+      break ;;
+      [Nn]* ) exit  ;;
+      * ) echo "Please answer yes or no.";;
+    esac
+    done
+fi
+echo -e "${_NUMBER}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo -e "${_BLUE_TEXT}Generate client certificate"
+echo -e "${_NUMBER}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${_NORMAL}"
+openssl ca -config $_SSLconf -days $_RootCrtExp -in $_CSRfolder/CLI-$_PKCName.csr -out $_CERTfolder/CLI-$_PKCName.crt -keyfile $_PrivFolder/$_KeyFolder/$_RootKey -passin pass:$_passVar -cert $_CERTfolder/$_RootCrt -policy policy_anything
+  if [ "$?" = "0" ]; then
+    echo -e "${_GREEN_TEXT}Client certificate $_CERTfolder/CLI-$_PKCName.crt generate successful${_NORMAL}"
+  else
+    echo -e "${_RED_TEXT}Can not generate client certificate $_CERTfolder/CLI-$_PKCName.crt, ERROR code: $?${_NORMAL}"
+    exit
+  fi
+if [ -f $_CERTfolder/CLI-$_PKCName.p12 ]; then
+  while true; do
+  echo -e "${_RED_TEXT}He was found: $_CERTfolder/CLI-$_PKCName.p12${_GREEN_TEXT}"
+  echo -e "${_RED_TEXT}Be careful in your choice!${_NORMAL}"
+  read -p "Do you want to continue (Y/N)?" answer
+    case $answer in
+      [Yy]* ) 
+        gzip $_CERTfolder/CLI-$_PKCName.p12
+        mv $_CERTfolder/CLI-$_PKCName.p12.gz $_CERTfolder/CLI-$_PKCName.p12$_date.gz
+      break ;;
+      [Nn]* ) exit  ;;
+      * ) echo "Please answer yes or no.";;
+    esac
+    done
+fi
+echo -e "${_NUMBER}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo -e "${_BLUE_TEXT}Export client certificate in p12 file format"
+echo -e "${_NUMBER}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${_NORMAL}"
+openssl pkcs12 -export -in $_CERTfolder/CLI-$_PKCName.crt -inkey $_PrivFolder/$_KeyFolder/CLI-$_PKCName.key -certfile $_CERTfolder/$_RootCrt -passin pass:$_passCLIKey -out $_CERTfolder/CLI-$_PKCName.p12 -passout pass:$_passexpCLIp12
+  if [ "$?" = "0" ]; then
+    echo -e "${_GREEN_TEXT}Client certificate $_CERTfolder/CLI-$_PKCName.p12 export successful${_NORMAL}"
+  else
+    echo -e "${_RED_TEXT}Can not export client certificate $_CERTfolder/CLI-$_PKCName.p12, ERROR code: $?${_NORMAL}"
+  fi
+openssl ca -config $_SSLconf -gencrl -crlhours $_CRLupdteHRS -passin pass:$_passVar -out $_CRLfileName.crl
+  if [ "$?" = "0" ]; then
+    echo -e "${_GREEN_TEXT}Generate CRL file $_CRLfileName.crl successful${_NORMAL}"
+  else
+    echo -e "${_RED_TEXT}ERROR generate CRL file $_CRLfileName.crl, code: $?${_NORMAL}"
+  fi
+show_menu;
+;;
+#########################################################################################
+############################### OPTION R FROM MENU ######################################
+R) clear;
+option_picked "${_GREEN_TEXT}_____|${_BLUE_TEXT}REVOKE CERTIFICATE${_GREEN_TEXT}|_____${_NORMAL}";
+if [ ! -d "$_PrivFolder" ]; then
+  echo -e "${_RED_TEXT}Not found directory: $_PrivFolder/$_KeyFolder"
+  echo -e "The process revoke can not be started${_NORMAL}"
+  break
+fi
+if [ ! -d "$_CERTfolder" ]; then
+  echo -e "${_RED_TEXT}Not found directory: $_CERTfolder"
+  echo -e "The process revoke can not be started${_NORMAL}"
+  break
+fi
+if [ ! -d "$_CSRfolder" ]; then
+  echo -e "${_RED_TEXT}Not found directory: $_CSRfolder"
+  echo -e "The process revoke can not be started${_NORMAL}"
+  break
+fi
+if [ ! -d "$_PEMfolder" ]; then
+  echo -e "${_RED_TEXT}Not found directory: $_PEMfolder"
+  echo -e "The process revoke can not be started${_NORMAL}"
+  break
+fi
+if [ ! -f $_IndexTXT ]; then
+  echo -e "${_RED_TEXT}Can not be found: $_IndexTXT"
+  echo -e "The process revoke can not be started${_NORMAL}"
+  break
+fi
+if [ ! -f $_CRLnumb ]; then
+  echo -e "${_RED_TEXT}Can not be found: $_CRLnumb"
+  echo -e "The process revoke can not be started${_NORMAL}"
+  break
+fi
+if [ ! -f $_SerialFile ]; then
+  echo -e "${_RED_TEXT}Can not be found: $_SerialFile"
+  echo -e "The process revoke can not be started${_NORMAL}"
+  break
+fi
+if [ ! -f $_SSLconf ]; then
+  echo -e "${_RED_TEXT}Can not be found: $_SSLconf"
+  echo -e "The process revoke can not be started${_NORMAL}"
+  break
+fi
+while true; do
+  read -p "Please enter a specific number of PEM file you want to revoke: " _showPemRM
+  echo "___________________________________________________________________| Revoke $_PEMfolder/$_showPemRM.pem file " 
+  cat $_PEMfolder/$_showPemRM.pem |awk 'NR >= 1 && NR <= 13'
+  echo "____________________________________________________________________"
+  echo -e "\n"
+  read -p "Do you want to continue (Y/N)?" answer
+    case $answer in
+      [Yy]* ) 
+        openssl ca -config $_SSLconf -revoke $_PEMfolder/$_showPemRM.pem -passin pass:$_passVar
+      break ;;
+      [Nn]* ) break ;;
+      * ) echo "Please answer yes or no.";;
+    esac
+    done
+echo -e "${_GREEN_TEXT}_____| Generating CRL file |_____${_NORMAL}"
+openssl ca -config $_SSLconf -gencrl -crlhours $_CRLupdteHRS -passin pass:$_passVar -out $_CRLfileName.crl
+  if [ "$?" = "0" ]; then
+    echo -e "${_GREEN_TEXT}_____| Process successful  |_____${_NORMAL}"
+  else
+    echo -e "${_RED_TEXT} Can not generate $_CRLfileName.crl file, ERROR code: $?${_NORMAL}"
+  fi
+show_menu;
+;;
+#########################################################################################
+############################### OPTION i FROM MENU ######################################
+i) clear;
+option_picked "${_GREEN_TEXT}_____|${_BLUE_TEXT}PEM AND CRL INFORMATION${_GREEN_TEXT}|_____${_NORMAL}";
+if [ ! -d "$_PrivFolder" ]; then
+  echo -e "${_RED_TEXT}Not found directory: $_PrivFolder/$_KeyFolder"
+  echo -e "The process revoke can not be started${_NORMAL}"
+  break
+fi
+if [ ! -d "$_CERTfolder" ]; then
+  echo -e "${_RED_TEXT}Not found directory: $_CERTfolder"
+  echo -e "The process revoke can not be started${_NORMAL}"
+  break
+fi
+if [ ! -d "$_CSRfolder" ]; then
+  echo -e "${_RED_TEXT}Not found directory: $_CSRfolder"
+  echo -e "The process revoke can not be started${_NORMAL}"
+  break
+fi
+if [ ! -d "$_PEMfolder" ]; then
+  echo -e "${_RED_TEXT}Not found directory: $_PEMfolder"
+  echo -e "The process revoke can not be started${_NORMAL}"
+  break
+fi
+if [ ! -f $_IndexTXT ]; then
+  echo -e "${_RED_TEXT}Can not be found: $_IndexTXT"
+  echo -e "The process revoke can not be started${_NORMAL}"
+  break
+fi
+if [ ! -f $_CRLnumb ]; then
+  echo -e "${_RED_TEXT}Can not be found: $_CRLnumb"
+  echo -e "The process revoke can not be started${_NORMAL}"
+  break
+fi
+if [ ! -f $_SerialFile ]; then
+  echo -e "${_RED_TEXT}Can not be found: $_SerialFile"
+  echo -e "The process revoke can not be started${_NORMAL}"
+  break
+fi
+if [ ! -f $_SSLconf ]; then
+  echo -e "${_RED_TEXT}Can not be found: $_SSLconf"
+  echo -e "The process revoke can not be started${_NORMAL}"
+  break
+fi
+while true; do
+  read -p "Do you want to search for a value (Y/N)?" answer
+    case $answer in
+      [Yy]* ) 
+        read -p "Please enter a value to search: " _findINpem
+        for f in $_PEMfolder/*.pem; do echo "___________________________________________________________________| Search result for $f file "; cat $f |awk 'NR >= 1 && NR <= 13' |grep -i --color $_findINpem
+          if [ "$?" = "0" ]; then
+            echo ""
+          else
+            echo -e "${_RED_TEXT}No results were found in $f file for your search criteria ${_NORMAL}"
+          fi; done
+          ;;
+      [Nn]* ) break  ;;
+      * ) echo "Please answer yes or no.";;
+    esac
+    done
+while true; do
+  read -p "Do you want to view specific number of PEM file (Y/N)?" answer
+    case $answer in
+      [Yy]* ) 
+        echo -e "${_GREEN_TEXT}-----------------------------------------------"
+        echo -e "${_BLUE_TEXT}XX${_GREEN_TEXT}.pem (Only the filename! No extension \".pem\")"
+        echo -e "-----------------------------------------------"
+        ls $_PEMfolder/*.pem |xargs -n1 basename
+        echo -e "${_GREEN_TEXT}^^^--------------------------------------------${_NORMAL}"
+        read -p "Please enter a specific number of PEM file: " _showPem
+        echo "___________________________________________________________________| Show $_showPem.pem file "                  
+        cat $_PEMfolder/$_showPem.pem |awk 'NR >= 1 && NR <= 13'
+        echo -e "\n"
+        ;;
+      [Nn]* ) break  ;;
+      * ) echo "Please answer yes or no.";;
+    esac
+    done
+while true; do
+  read -p "Do you want to view CRL information (Y/N)?" answer
+    case $answer in
+      [Yy]* ) 
+        echo "___________________________________________________________________| Show $_CRLfileName.crl file "
+        openssl crl -noout -in $_CRLfileName.crl -text | head -n -15 | sed '/Signature Algorithm:/d'
+      break ;;
+      [Nn]* ) break ;;
+      * ) echo "Please answer yes or no.";;
+    esac
+    done
+show_menu;
+;;
+#########################################################################################
+############################### TAIL SCRIPT #############################################
+        *)clear;
+        option_picked "INVALID CHOICE, please try again...";
+        show_menu;
+        ;;
+    esac
+fi
+done
