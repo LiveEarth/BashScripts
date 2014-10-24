@@ -1,0 +1,396 @@
+**************************************************
+*** Отчет и запис на данни от Arpwatch в MySQL ***
+**************************************************
+Цел на заданието:
+Да се изгради система, която да отчита настъпилите промени в адресното пространство на локална мрежа (192.168.0.0/22)
+Търсени промени:
+  - Нов IP адрес/MAC адрес
+  - Смяна на MAC адрес
+  - Повтаряемост на сменен MAC адрес
+Отчетените промени да бъдат записани в база от данни (MySQL) и едновременно с това, да се праща репорт до избран мейл адрес.
+
+За изпълнение на заданието, ще се използва Линукс ОС, върху която ще се инсталира Arpwatch (който да прихваща промените в адресното пространство),
+MySQL/phpMyAdmin и допълнителни библиотеки на Perl (нужни за скрипта, който ще използваме).
+За събирането на данните ще се ползва скрипт (arp2db), информация за който има на адрес: http://parishnetworks.blogspot.com/2013/04/sending-arpwatch-updates-to-mysql.html
+
+1. Инсталация на ОС
+За целите на заданието ще се ползва "Ubuntu 14.04 LTS", x86_64
+>>> Инсталация на ОС
+ -> Следвайки съветника за инсталиране на ОС се стига до стъпка, където се пита:
+    "How do you want to manage upgrades on this system?"
+    +----------------------------------------------+
+    |[]  No automatic updates                      |
+    |[]  Install security updates automatically    |
+    |[X] Manage system with Landscape              |
+    +----------------------------------------------+
+    
+    Следва пояснение за това, какво искаме да инсталираме допълнително:
+    "Choose software to install"
+    +----------------------------------------------+
+    |[X] OpenSSH server                            |
+    |[]  DNS server                                |
+    |[]  LAMP server                               |
+    |[X] Mail server                               |
+    |[]  PostgreSQL database                       |
+    |[]  Print server                              |
+    |[]  Samba file server                         |
+    |[]  Tomcat Java server                        |
+    |[]  Virtual Machine host                      |
+    |[]  Manual package selection                  |
+    +----------------------------------------------+
+ -> Следва продължение на инсталацията по избор
+ 
+>>> Конфигурация на ОС
+ -> Влиза се с потребителя, който сме задали при инсталацията на ОС. Приемаме, че този потребител е "scon" с парола 111111
+    Изпълняваме следната команда, която ще даде възможност за настройка на паролата на "root" по наше желание:
+    # sudo passwd root
+ -> Update на ОС
+    # yum update
+ -> Инсталиране на допълнителни програми
+    # apt-get install mc
+    # apt-get install htop
+    # apt-get install make
+    
+ -> Инсталиране на допълнителни библиотеки за Perl. 
+    - Проверяваме какво трябва за:
+      Time::Format
+      Mail::Message (За тази библиотека, трябва да присъства MIME::Tools от Perl набора!)
+      Time::ParseDate
+    - Инсталираме нужните допълнения:
+      # Търсене: apt-cache search Time::Format perl
+      libdatetime-format-builder-perl - module to create DateTime parsers
+      libdatetime-format-strptime-perl - Perl module to parse and format strp and strf time patterns
+      libdatetime-format-dateparse-perl - Perl module parsing Date::Parse compatible formats
+      libdatetime-format-dbi-perl - abstraction layer for DateTime over some database vendors
+      libdatetime-format-epoch-perl - Perl module to convert DateTime objects to or from epoch seconds
+      libdatetime-format-flexible-perl - Perl module to transform strings into DateTime objects
+      libdatetime-format-http-perl - Perl module for date conversion with date formats used by the HTTP protocol
+      libdatetime-format-ical-perl - Perl module to parse and format iCal datetime and duration strings
+      libdatetime-format-iso8601-perl - module to parse ISO8601 date and time formats
+      libdatetime-format-natural-perl - Perl module for parsing human-readable date/time strings
+      libdatetime-format-oracle-perl - module for parsing and formatting Oracle dates and timestamps
+      libdatetime-format-pg-perl - module for parsing and formatting PostgreSQL dates and times
+      libdatetime-format-rfc3339-perl - module to parse and format RFC3339 datetime strings
+      libdatetime-format-sqlite-perl - module to parse and format SQLite dates and times
+      libdatetime-format-w3cdtf-perl - module to parse and format W3CDTF datetime strings
+      libdatetime-format-xsd-perl - format DateTime according to xsd:dateTime
+      libdatetimex-easy-perl - module to parse arbitrary date/time strings
+      libtemplate-plugin-datetime-format-perl - module for formatting DateTime objects from TT with DateTime::Format
+      libtime-format-perl - module for easy date/time formatting
+      
+      # Инсталиране: apt-get install libdatetime-format-builder-perl libdatetime-format-strptime-perl libdatetime-format-dateparse-perl libdatetime-format-dbi-perl
+                        libdatetime-format-epoch-perl libdatetime-format-flexible-perl libdatetime-format-http-perl libdatetime-format-ical-perl
+                        libdatetime-format-iso8601-perl libdatetime-format-natural-perl libdatetime-format-oracle-perl libdatetime-format-pg-perl
+                        libdatetime-format-rfc3339-perl libdatetime-format-sqlite-perl libdatetime-format-w3cdtf-perl libdatetime-format-xsd-perl
+                        libdatetimex-easy-perl libtemplate-plugin-datetime-format-perl libtime-format-perl
+      
+      # Търсене: apt-cache search Time::ParseDate perl
+      libtime-modules-perl - collection of Perl modules for time/date manipulation
+      # Инсталиране: apt-get install libtime-modules-perl
+    - Ръчно инсталиране на MIME::Tools за Perl
+      # Избираме си подходяща директория, в която ще сваляме и компилираме.
+      # wget search.cpan.org/CPAN/authors/id/D/DO/DONEILL/MIME-tools-5.500.tar.gz
+      # tar -zxvf MIME-tools-5.500.tar.gz
+      | # -z : Work on gzip compression automatically when reading archives.                                           | 
+      | # -x : Extract archives.                                                                                       | 
+      | # -v : Produce verbose output i.e. display progress and extracted file list on screen.                         | 
+      | # -f : Read the archive from the archive to the specified file. In this example, read backups.tar.gz archive.  | 
+      | # -t : List the files in the archive.                                                                          |
+      
+      # cd MIME-tools-5.500/ && perl Makefile.PL && make && make test install
+      # perl -MCPAN -e shell
+      # cpan[1]> install Mail::Message
+      # Следват се инструкциите на cpan за инсталиране на Mail::Message
+      
+>>> Инсталация на MySQL/phpMyAdmin
+ -> Инсталиране на MySQL
+    # aptitude -y install mysql-server-5.6
+    # По време на инсталацията, трябва да се конфигурира MySQL root парола
+    
+    +--------------------+ Configuring mysql-server-5.6 +---------------------+
+    | While not mandatory, it is highly recommended that you set a password   |
+    | for the MySQL administrative "root" user.                               |
+    |                                                                         |
+    | If this field is left blank, the password will not be changed.          |
+    |                                                                         |
+    | New password for the MySQL "root" user:                                 |
+    |                                                                         |
+    | ______________________парола-по-избор__________________________________ |
+    |                                                                         |
+    |                                 <Ok>                                    |
+    |                                                                         |
+    +-------------------------------------------------------------------------+
+      
+    # След като приключи инсталацията, правим опит да се логнем в MySQL с потребител root и паролата, която сме избрали
+    # mysql -u root -p
+    # Проверяваме информацията за всички потребители
+    # mysql> select user,host,password from mysql.user; 
+      +------------------+-----------+-------------------------------------------+
+      | user             | host      | password                                  |
+      +------------------+-----------+-------------------------------------------+
+      | root             | localhost | *247xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx |
+      | root             | www       | *247xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx |
+      | root             | 127.0.0.1 | *247xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx |
+      | root             | ::1       | *247xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx |
+      | debian-sys-maint | localhost | *247xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx |
+      +------------------+-----------+-------------------------------------------+
+      5 rows in set (0.00 sec)
+
+    # Ако искаме да променим паролата на root за localhost, www, 127.0.0.1 и ::1 изпълняваме следните команди:
+      # mysql> set password for root@localhost=password('парола_която_искаме');
+        Query OK, 0 rows affected (0.00 sec)
+      # mysql> set password for root@'127.0.0.1'=password('парола_която_искаме');  
+        Query OK, 0 rows affected (0.00 sec)
+      # mysql> set password for root@'www'=password('парола_която_искаме');  
+        Query OK, 0 rows affected (0.00 sec)
+      # mysql> set password for root@'::1'=password('парола_която_искаме');  
+        Query OK, 0 rows affected (0.00 sec)
+    
+    # Забраняваме достъпа на anonymous потребител до MySQL
+      # delete from mysql.user where user='';
+        Query OK, 2 rows affected (0.00 sec) 
+
+ -> Създаване на база и таблица за попълване на данни в MySQL
+    # mysql> SHOW DATABASES;
+             +--------------------+
+             | Database           |
+             +--------------------+
+             | information_schema |
+             | mysql              |
+             | performance_schema |
+             | phpmyadmin         |
+             +--------------------+
+             5 rows in set (0.00 sec)
+
+    # mysql> CREATE DATABASE arp2db;
+             Query OK, 1 row affected (0.02 sec)
+    # mysql> USE arp2db;
+             Database changed
+    # mysql> CREATE TABLE `iptomac` (
+            `hostname` varchar(255) DEFAULT NULL,
+            `ip` int(11) DEFAULT NULL,
+            `ether` char(17) DEFAULT NULL,
+            `change_date` datetime DEFAULT NULL,
+            `note` varchar(255) DEFAULT NULL,
+            UNIQUE KEY `macaddy` (`ether`)
+          ) ENGINE=InnoDB;
+
+        
+ -> Инсталиране на phpMyAdmin
+    # aptitude -y install phpMyAdmin 
+    # По време на инсталацията, phpMyAdmin трябва да се конфигурира с избран http съррвър:
+     +-----------------------+ Configuring phpmyadmin +--------------------------+
+     | Please choose the web server that should be automatically configured to   |
+     | run phpMyAdmin.                                                           |
+     |                                                                           |
+     | Web server to reconfigure automatically:                                  |
+     |                                                                           |
+     |    [X] apache2                                                            |
+     |    [ ] lighttpd                                                           |
+     |                                                                           |
+     |                                  <Ok>                                     |
+     |                                                                           |
+     +---------------------------------------------------------------------------+
+    # Следваща стъпка в инсталацията е настройка връзката на phpMyAdmin, към MySQL
+     +------------------------+ Configuring phpmyadmin +-------------------------+
+     |                                                                           |
+     | The phpmyadmin package must have a database installed and configured      |
+     | before it can be used.  This can be optionally handled with               |
+     | dbconfig-common.                                                          |
+     |                                                                           |
+     | If you are an advanced database administrator and know that you want to   |
+     | perform this configuration manually, or if your database has already      |
+     | been installed and configured, you should refuse this option.  Details    |
+     | on what needs to be done should most likely be provided in                |
+     | /usr/share/doc/phpmyadmin.                                                |
+     |                                                                           |
+     | Otherwise, you should probably choose this option.                        |
+     |                                                                           |
+     | Configure database for phpmyadmin with dbconfig-common?                   |
+     |                                                                           |
+     |                    <Yes>                       <No>                       |
+     |                                                                           |
+     +---------------------------------------------------------------------------+
+    # За да се ограничи достъпа до phpMyAdmin (с цел защита от атаки), се редактира файла "/etc/phpmyadmin/apache.conf",
+    # където някъде около 8 ред се добавя: "->"
+    #-------------------------------------------------
+    #      <Directory /usr/share/phpmyadmin>
+    #          Options FollowSymLinks
+    #          DirectoryIndex index.php
+    #  ->      Require ip 127.0.0.1 10.0.0.0/24
+    #-------------------------------------------------
+    # Това ограничава достъпа на всички с изключение на 127.0.0.1 и 10.0.0.0/24
+    # Следва рестартиране на "web server apache2":
+    # /etc/init.d/apache2 restart 
+
+>>> Подготовка на скрипта "arp2db" за ползване. По-долу е представена структура на скрипта и съответните промени, според настройките, който са описани по-горе.
+    # cat /usr/local/bin/arp2db
+        +----------------------------------------------------------------------------------------------+
+        |    #!/usr/bin/perl                                                                           |(1) При изпълнение на скрипта, кога да се праща мейл. Възможни опции са:
+        |                                                                                              |    - "yes" да праща мейл, при всяко събитие (нов MAC адрес; промяна на съществуващ MAC адрес; flip flop състояния)
+        |                                                                                              |      - При рестартиране на ОС, отново изпраща по мейл, всички получени до момента събития с етикет "нов MAC адрес", в процеса на сканиране на мрежата от Arpwatch
+        |    # USE WITH -s OPTION ON ARPWATCH TO SEND                                                  |    - "no"  да не изпращат мейл съобщения
+        |    # EMAIL MESSAGES TO MySQL                                                                 |    - "selective" да изпраща мейл само при промяна на съществуващ MAC адрес; flip flop състояния
+        |                                                                                              |
+        |    # WRITTEN 04.08.2013 by BParish                                                           |(2) Получател на мейл съобщения
+        |                                                                                              |(3) Колко подробен да бъде лога при изпълнение на скрипта. Възможни опции са 0; 1; 2; 3. По подразбиране е 1.
+        |    use strict;                                                                               |(4) Място, където се намира лог на събитията от изпълнение на скрипта
+        |    use DBI;                                                                                  |(5) IP за връзка към MySQL
+        |    use Time::Format;                                                                         |(6) Име на база 
+        |    use Mail::Message;                                                                        |(7) Име на таблица, в която ще се въвеждат стойности
+        |    use Time::ParseDate;                                                                      |(8) Потребителско име за достъп
+        |                                                                                              |(9) Парола
+        |                                                                                              |
+        |    # TURN ON OR OFF EMAIL:                                                                   |
+        |    # VALUES CAN BE "yes", "no", "selective"                                                  |
+        |    # (selective MEANS DONT SEND "new station" EMAIL)                                         |
+ (1)->  |    my $email = 'selective';                                                                  |
+ (2)->  |    my $mailto = 'uzunov.g@scon-bg.com';                                                      |
+        |                                                                                              |
+        |    # SET DEBUG LEVEL AND OUTPUT LOG:                                                         |
+        |    # LEVEL 1 JUST LOGS THE SUBJECT LINE                                                      |
+ (3)->  |    my $debug = 1;                                                                            |
+ (4)->  |    my $logfile = "/var/log/arp2db.log";                                                      |
+        |                                                                                              |
+        |    # SET DATABASE CONNECTION PARAMETERS:                                                     |
+ (5)->  |    my $dbhost = 'localhost';                                                                 |
+ (6)->  |    my $database = 'arp2db';                                                                  |
+ (7)->  |    my $dbtable = 'iptomac';                                                                  |
+ (8)->  |    my $dbuser = 'root';                                                                      |
+ (9)->  |    my $dbpass = '111111';                                                                    |
+        |                                                                                              |
+        |                                                                                              |
+        |    my $VERSION = '1.1';                                                                      |
+        |    my $UPDATE = '04.09.2013';                                                                |
+        |                                                                                              |
+        |                                                                                              |
+        |    # OPEN LOG FILE IF DEBUG IS ON:                                                           |
+        |    open LOG, ">> $logfile" if ($debug > 0);                                                  |
+        |                                                                                              |
+        |    # ESTABLISH DATABASE CONNECTION:                                                          |
+        |    my $dbconn = "DBI:mysql:$database:$dbhost";                                               |
+        |    my $oh_db = DBI->connect($dbconn,$dbuser,$dbpass,{RaiseError => 1});                      |
+        |                                                                                              |
+        |    # TAKE EMAIL FROM STDIN:                                                                  |
+        |    my $msg = Mail::Message->read(\*STDIN);                                                   |
+        |                                                                                              |
+        |    if ($email eq 'yes') {                                                                    |
+        |       my $bounce = $msg->bounce(To => $mailto);                                              |
+        |       $bounce->send;                                                                         |
+        |    }                                                                                         |
+        |                                                                                              |
+        |    my $subject = $msg->subject;                                                              |
+        |    print LOG "Subject: $subject \n" if ($debug > 0);                                         |
+        |                                                                                              |
+        |    if ($email eq 'selective' && $subject !~ m/new station/i) {                               |
+        |       my $bounce = $msg->bounce(To => $mailto);                                              |
+        |       $bounce->send;                                                                         |
+        |    }                                                                                         |
+        |                                                                                              |
+        |    my $body = $msg->body;                                                                    |
+        |    print LOG "Body: \n$body \n" if ($debug > 2);                                             |
+        |    my @lines = split('\n', $body);                                                           |
+        |                                                                                              |
+        |    # READ EMAIL BODY AND SET VARIABLES FROM IT:                                              |
+        |    my ($hostname, $ip, $interface, $ether, $vendor, $timestamp);                             |
+        |    foreach my $line (@lines) {                                                               |
+        |       print LOG "\t $line \n" if ($debug > 1);                                               |
+        |                                                                                              |
+        |       $hostname = $1 if ($line =~ m/hostname: (.*)/i);                                       |
+        |       $ip = $1 if ($line =~ m/ip address: (.*)/i);                                           |
+        |       $interface = $1 if ($line =~ m/interface: (.*)/i);                                     |
+        |       $ether = $1 if ($line =~ m/ethernet address: (.*)/i);                                  |
+        |       $vendor = $1 if ($line =~ m/ethernet vendor: (.*)/i);                                  |
+        |       $timestamp = parsedate("$1") if ($line =~ m/timestamp: \w+, (.*)/i);                   |
+        |    }                                                                                         |
+        |                                                                                              |
+        |    # SET $timestamp TO NOW IF NOT DEFINED:                                                   |
+        |    if (! $timestamp || $timestamp == '') {                                                   |
+        |       print LOG "\t Unable to read timestamp in email, setting to now \n" if ($debug > 3);   |
+        |       $timestamp = time();                                                                   |
+        |    }                                                                                         |
+        |                                                                                              |
+        |    # MySQL WANTS DATETIME AS YYYY-MM-DD HH:MM:SS:                                            |
+        |    $timestamp = $time{'yyyy-mm-dd hh:mm:ss', $timestamp};                                    |
+        |    print LOG "\t Time is $timestamp \n" if ($debug > 3);                                     |
+        |                                                                                              |
+        |    my ($query, $note);                                                                       |
+        |                                                                                              |
+        |    $note = "Initial log" if ($subject =~ m/new station/i);                                   |
+        |    $note = "Changed" if ($subject =~ m/changed ethernet address/i);                          |
+        |    $note = "Flip Flop" if ($subject =~ m/flip flop/i);                                       |
+        |                                                                                              |
+        |    print LOG "\t Operation: $note \n" if ($debug > 2);                                       |
+        |                                                                                              |
+        |    $query = "INSERT INTO iptomac (hostname, ip, ether, change_date, note) \n";               |
+        |    if ($hostname  =~ m/<?unknown>?/) {                                                       |
+        |       $query .= "VALUES ( NULL, ";                                                           |
+        |    } else {                                                                                  |
+        |       $query .= sprintf( "VALUES ( %s, ", $oh_db->quote($hostname) );                        |
+        |    }                                                                                         |
+        |    $query .= sprintf( "INET_ATON(%s), ", $oh_db->quote($ip) );                               |
+        |    $query .= sprintf( "%s, ", $oh_db->quote($ether) );                                       |
+        |    $query .= sprintf( "%s, ", $oh_db->quote($timestamp) );                                   |
+        |    $query .= sprintf( "%s ) \n", $oh_db->quote($note) );                                     |
+        |    $query .= "ON DUPLICATE KEY UPDATE \n";                                                   |
+        |    if ($hostname  =~ m/<?unknown>?/) {                                                       |
+        |       $query .= "hostname = NULL, ";                                                         |
+        |    } else {                                                                                  |
+        |       $query .= sprintf( "hostname = %s, ", $oh_db->quote($hostname) );                      |
+        |    }                                                                                         |
+        |    $query .= sprintf( "ip = INET_ATON(%s), ", $oh_db->quote($ip) );                          |
+        |    $query .= sprintf( "ether = %s, ", $oh_db->quote($ether) );                               |
+        |    $query .= sprintf( "change_date = %s, ", $oh_db->quote($timestamp) );                     |
+        |    $query .= sprintf( "note = %s ", $oh_db->quote($note) );                                  |
+        |                                                                                              |
+        |    my $oh_st = $oh_db->prepare($query);                                                      |
+        |    $oh_st->execute();                                                                        |
+        |    print LOG "\t Query: \n $query \n\n" if ($debug > 2);                                     |
+        |                                                                                              |
+        |  close(LOG) if ($debug > 0);                                                                 |
+        +----------------------------------------------------------------------------------------------+
+
+>>> Проверка за работоспособността на мейл сървъран на ОС:
+    # echo "test message" | mailx -s "arp2db test mail" uzunov.g@scon-bg.com
+    
+>>> Инсталиране и конфигуриране на Arpwatch 
+    # apt-get install arpwatch
+    
+    # Редактиране на /etc/default/arpwatch
+    #-------------------------------------------------
+    # # Global options for arpwatch(8).
+    #     ARGS="-N -p -s /usr/local/bin/arp2db -m uzunov.g@scon-bg.com -f /etc/arpwatch.dat"
+    # # The -N flag disables reporting any bogons.
+    # # The -p flag disables promiscuous operation.
+    # # The -s flag is used to specify the path to the sendmail program.
+    # #        Any program that takes the option -odi and then text from stdin can be  substituted.
+    # #        This  is  useful  for  redirecting reports to log files instead of mail.
+    # # The -m option is used to specify the e-mail address to which reports will be sent.
+    # # The -f flag is used to set the ethernet/ip address database filename.
+    # 
+    # # Debian: run as `arpwatch' user.  Empty this to run as root.
+    #     RUNAS="arpwatch"
+    #-------------------------------------------------
+
+    
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
