@@ -1,213 +1,117 @@
 #EXTM3U
-#EXTINF:0, [BG] 24 Kitchen
-http://127.0.0.1:8987/iptv/%5BBG%5D+24+Kitchen
-#EXTINF:0, [BG] 7/8 TV
-http://127.0.0.1:8987/iptv/%5BBG%5D+7%2F8+TV
-#EXTINF:0, [BG] AMC
-http://127.0.0.1:8987/iptv/%5BBG%5D+AMC
-#EXTINF:0, [BG] AXN
-http://127.0.0.1:8987/iptv/%5BBG%5D+AXN
-#EXTINF:0, [BG] AXN Black
-http://127.0.0.1:8987/iptv/%5BBG%5D+AXN+Black
-#EXTINF:0, [BG] AXN White
-http://127.0.0.1:8987/iptv/%5BBG%5D+AXN+White
-#EXTINF:0, [BG] Action Plus
-http://127.0.0.1:8987/iptv/%5BBG%5D+Action+Plus
-#EXTINF:0, [BG] Alfa TV
-http://127.0.0.1:8987/iptv/%5BBG%5D+Alfa+TV
-#EXTINF:0, [BG] Animal Planet
-http://127.0.0.1:8987/iptv/%5BBG%5D+Animal+Planet
-#EXTINF:0, [BG] Baby TV
-http://127.0.0.1:8987/iptv/%5BBG%5D+Baby+TV
-#EXTINF:0, [BG] Balkanika
-http://127.0.0.1:8987/iptv/%5BBG%5D+Balkanika
-#EXTINF:0, [BG] Boomerang
-http://127.0.0.1:8987/iptv/%5BBG%5D+Boomerang
-#EXTINF:0, [BG] Bulgaria 24
-http://127.0.0.1:8987/iptv/%5BBG%5D+Bulgaria+24
-#EXTINF:0, [BG] CNN International Europe
-http://127.0.0.1:8987/iptv/%5BBG%5D+CNN+International+Europe
-#EXTINF:0, [BG] Cartoon Network
-http://127.0.0.1:8987/iptv/%5BBG%5D+Cartoon+Network
-#EXTINF:0, [BG] Cinema Plus
-http://127.0.0.1:8987/iptv/%5BBG%5D+Cinema+Plus
-#EXTINF:0, [BG] City TV
-http://127.0.0.1:8987/iptv/%5BBG%5D+City+TV
-#EXTINF:0, [BG] Comedy Plus
-http://127.0.0.1:8987/iptv/%5BBG%5D+Comedy+Plus
-#EXTINF:0, [BG] Crime & Investigations
-http://127.0.0.1:8987/iptv/%5BBG%5D+Crime+%26+Investigations
-#EXTINF:0, [BG] DM Sat
-http://127.0.0.1:8987/iptv/%5BBG%5D+DM+Sat
-#EXTINF:0, [BG] Da Vinci
-http://127.0.0.1:8987/iptv/%5BBG%5D+Da+Vinci
-#EXTINF:0, [BG] Destination BG
-http://127.0.0.1:8987/iptv/%5BBG%5D+Destination+BG
-#EXTINF:0, [BG] Diema
-http://127.0.0.1:8987/iptv/%5BBG%5D+Diema
-#EXTINF:0, [BG] Diema Family
-http://127.0.0.1:8987/iptv/%5BBG%5D+Diema+Family
-#EXTINF:0, [BG] Disc Science
-http://127.0.0.1:8987/iptv/%5BBG%5D+Disc+Science
-#EXTINF:0, [BG] Discovery Channel
-http://127.0.0.1:8987/iptv/%5BBG%5D+Discovery+Channel
-#EXTINF:0, [BG] Disney Channel
-http://127.0.0.1:8987/iptv/%5BBG%5D+Disney+Channel
-#EXTINF:0, [BG] Disney Junior
-http://127.0.0.1:8987/iptv/%5BBG%5D+Disney+Junior
-#EXTINF:0, [BG] Docubox
-http://127.0.0.1:8987/iptv/%5BBG%5D+Docubox
-#EXTINF:0, [BG] Duck TV
-http://127.0.0.1:8987/iptv/%5BBG%5D+Duck+TV
-#EXTINF:0, [BG] EKids
-http://127.0.0.1:8987/iptv/%5BBG%5D+EKids
-#EXTINF:0, [BG] Evrokom
-http://127.0.0.1:8987/iptv/%5BBG%5D+Evrokom
-#EXTINF:0, [BG] F Plus
-http://127.0.0.1:8987/iptv/%5BBG%5D+F+Plus
-#EXTINF:0, [BG] Fast & FunBox FHD
-http://127.0.0.1:8987/iptv/%5BBG%5D+Fast+%26+FunBox+FHD
-#EXTINF:0, [BG] Fen Folk TV
-http://127.0.0.1:8987/iptv/%5BBG%5D+Fen+Folk+TV
-#EXTINF:0, [BG] Fen TV
-http://127.0.0.1:8987/iptv/%5BBG%5D+Fen+TV
-#EXTINF:0, [BG] Fightbox
-http://127.0.0.1:8987/iptv/%5BBG%5D+Fightbox
-#EXTINF:0, [BG] FilmBox Extra FHD
-http://127.0.0.1:8987/iptv/%5BBG%5D+FilmBox+Extra+FHD
-#EXTINF:0, [BG] FilmBox Stars
-http://127.0.0.1:8987/iptv/%5BBG%5D+FilmBox+Stars
-#EXTINF:0, [BG] Filmbox
-http://127.0.0.1:8987/iptv/%5BBG%5D+Filmbox
-#EXTINF:0, [BG] Food Network
-http://127.0.0.1:8987/iptv/%5BBG%5D+Food+Network
-#EXTINF:0, [BG] Fox
-http://127.0.0.1:8987/iptv/%5BBG%5D+Fox
-#EXTINF:0, [BG] Fox Crime
-http://127.0.0.1:8987/iptv/%5BBG%5D+Fox+Crime
-#EXTINF:0, [BG] Fox Life
-http://127.0.0.1:8987/iptv/%5BBG%5D+Fox+Life
-#EXTINF:0, [BG] H2
-http://127.0.0.1:8987/iptv/%5BBG%5D+H2
-#EXTINF:0, [BG] History Channel
-http://127.0.0.1:8987/iptv/%5BBG%5D+History+Channel
-#EXTINF:0, [BG] Hobby Lov
-http://127.0.0.1:8987/iptv/%5BBG%5D+Hobby+Lov
-#EXTINF:0, [BG] Hobby TV
-http://127.0.0.1:8987/iptv/%5BBG%5D+Hobby+TV
-#EXTINF:0, [BG] ID Xtra
-http://127.0.0.1:8987/iptv/%5BBG%5D+ID+Xtra
-#EXTINF:0, [BG] KinoNova
-http://127.0.0.1:8987/iptv/%5BBG%5D+KinoNova
-#EXTINF:0, [BG] Love Nature FHD
-http://127.0.0.1:8987/iptv/%5BBG%5D+Love+Nature+FHD
-#EXTINF:0, [BG] MTV 80s
-http://127.0.0.1:8987/iptv/%5BBG%5D+MTV+80s
-#EXTINF:0, [BG] MagicTV
-http://127.0.0.1:8987/iptv/%5BBG%5D+MagicTV
-#EXTINF:0, [BG] Movie Star
-http://127.0.0.1:8987/iptv/%5BBG%5D+Movie+Star
-#EXTINF:0, [BG] Nat Geo Wild FHD
-http://127.0.0.1:8987/iptv/%5BBG%5D+Nat+Geo+Wild+FHD
-#EXTINF:0, [BG] National Geo
-http://127.0.0.1:8987/iptv/%5BBG%5D+National+Geo
-#EXTINF:0, [BG] National Geo Wild
-http://127.0.0.1:8987/iptv/%5BBG%5D+National+Geo+Wild
-#EXTINF:0, [BG] National Geographic FHD
-http://127.0.0.1:8987/iptv/%5BBG%5D+National+Geographic+FHD
-#EXTINF:0, [BG] Nick Jr
-http://127.0.0.1:8987/iptv/%5BBG%5D+Nick+Jr
-#EXTINF:0, [BG] Nick Toons
-http://127.0.0.1:8987/iptv/%5BBG%5D+Nick+Toons
-#EXTINF:0, [BG] Nickelodeon
-http://127.0.0.1:8987/iptv/%5BBG%5D+Nickelodeon
-#EXTINF:0, [BG] Nova
-http://127.0.0.1:8987/iptv/%5BBG%5D+Nova
-#EXTINF:0, [BG] Nova FHD
-http://127.0.0.1:8987/iptv/%5BBG%5D+Nova+FHD
-#EXTINF:0, [BG] Planeta
-http://127.0.0.1:8987/iptv/%5BBG%5D+Planeta
-#EXTINF:0, [BG] Planeta Folk
-http://127.0.0.1:8987/iptv/%5BBG%5D+Planeta+Folk
-#EXTINF:0, [BG] Skat TV
-http://127.0.0.1:8987/iptv/%5BBG%5D+Skat+TV
-#EXTINF:0, [BG] Super Toons
-http://127.0.0.1:8987/iptv/%5BBG%5D+Super+Toons
-#EXTINF:0, [BG] TLC
-http://127.0.0.1:8987/iptv/%5BBG%5D+TLC
-#EXTINF:0, [BG] TV Plus
-http://127.0.0.1:8987/iptv/%5BBG%5D+TV+Plus
-#EXTINF:0, [BG] TV1000
-http://127.0.0.1:8987/iptv/%5BBG%5D+TV1000
-#EXTINF:0, [BG] The Voice
-http://127.0.0.1:8987/iptv/%5BBG%5D+The+Voice
-#EXTINF:0, [BG] The World
-http://127.0.0.1:8987/iptv/%5BBG%5D+The+World
-#EXTINF:0, [BG] Tiankov Folk
-http://127.0.0.1:8987/iptv/%5BBG%5D+Tiankov+Folk
-#EXTINF:0, [BG] Travel Channel
-http://127.0.0.1:8987/iptv/%5BBG%5D+Travel+Channel
-#EXTINF:0, [BG] Travel XP FHD
-http://127.0.0.1:8987/iptv/%5BBG%5D+Travel+XP+FHD
-#EXTINF:0, [BG] VH1
-http://127.0.0.1:8987/iptv/%5BBG%5D+VH1
-#EXTINF:0, [BG] Viasat Explorer
-http://127.0.0.1:8987/iptv/%5BBG%5D+Viasat+Explorer
-#EXTINF:0, [BG] Viasat History
-http://127.0.0.1:8987/iptv/%5BBG%5D+Viasat+History
-#EXTINF:0, [BG] Viasat Nature
-http://127.0.0.1:8987/iptv/%5BBG%5D+Viasat+Nature
-#EXTINF:0, [BG] bTV
-http://127.0.0.1:8987/iptv/%5BBG%5D+bTV
-#EXTINF:0, [BG] bTV Action
-http://127.0.0.1:8987/iptv/%5BBG%5D+bTV+Action
-#EXTINF:0, [BG] bTV Action FHD
-http://127.0.0.1:8987/iptv/%5BBG%5D+bTV+Action+FHD
-#EXTINF:0, [BG] bTV Cinema
-http://127.0.0.1:8987/iptv/%5BBG%5D+bTV+Cinema
-#EXTINF:0, [BG] bTV Comedy
-http://127.0.0.1:8987/iptv/%5BBG%5D+bTV+Comedy
-#EXTINF:0, [BG] bTV FHD
-http://127.0.0.1:8987/iptv/%5BBG%5D+bTV+FHD
-#EXTINF:0, [BG] bTV Lady
-http://127.0.0.1:8987/iptv/%5BBG%5D+bTV+Lady
-#EXTINF:0, [BG] BNT 4 FHD
-http://127.0.0.1:8987/iptv/%5BBG%5D%C2%A0BNT+4+FHD
-#EXTINF:0, [BG] BSTV
-http://127.0.0.1:8987/iptv/%5BBG%5D%C2%A0BSTV
-#EXTINF:0, [BG] Bulgare
-http://127.0.0.1:8987/iptv/%5BBG%5D%C2%A0Bulgare
-#EXTINF:0, [BG] Epic Drama
-http://127.0.0.1:8987/iptv/%5BBG%5D%C2%A0Epic+Drama
-#EXTINF:0, [BG] Mezzo
-http://127.0.0.1:8987/iptv/%5BBG%5D%C2%A0Mezzo
-#EXTINF:0, [BG] Planeta FHD
-http://127.0.0.1:8987/iptv/%5BBG%5D%C2%A0Planeta+FHD
-#EXTINF:-1 tvg-logo="" group-title="UK News", [UK] NHK World FHD
-http://127.0.0.1:8987/iptv/%5BUK%5D+NHK+World+FHD
-#EXTINF:-1 tvg-logo="" group-title="USA & Canada Movies", [US] HBO Comedy HD
-http://127.0.0.1:8987/iptv/%5BUS%5D+HBO+Comedy+HD
-#EXTINF:-1 tvg-logo="" group-title="USA & Canada Movies", [US] HBO HD
-http://127.0.0.1:8987/iptv/%5BUS%5D+HBO+HD
-#EXTINF:-1 tvg-logo="" group-title="USA & Canada Movies", [US] HBO Signature FHD
-http://127.0.0.1:8987/iptv/%5BUS%5D+HBO+Signature+FHD
-#EXTINF:-1 tvg-logo="" group-title="USA & Canada Movies", [US] HBO Zone HD
-http://127.0.0.1:8987/iptv/%5BUS%5D+HBO+Zone+HD
-#EXTINF:-1 tvg-logo="http://skylimitles.net:80/portal.phpmisc/logos/320/http://www.tv-logo.com/pt-data/uploads/images/logo/hbo2_ce.jpg" group-title="Bulgaria", BG: HBO 2 HD
-http://127.0.0.1:8987/iptv/BG%3A+HBO+2+HD
-#EXTINF:-1 tvg-logo="" group-title="Bulgaria", BG: HBO 3 HD
-http://127.0.0.1:8987/iptv/BG%3A+HBO+3+HD
-#EXTINF:-1 tvg-logo="" group-title="Bulgaria", BG: HBO HD
-http://127.0.0.1:8987/iptv/BG%3A+HBO+HD
-#EXTINF:-1 tvg-logo="http://skylimitles.net:80/portal.phpmisc/logos/320/https://www.firstonetv.net/images/logos/fr/MCM.png" group-title="Russia", [RU] Karusel Int
-http://127.0.0.1:8987/iptv/%5BRU%5D+Karusel+Int
-#EXTINF:-1 tvg-logo="" group-title="Russia", [RU] Kinomir
-http://127.0.0.1:8987/iptv/%5BRU%5D+Kinomir
-#EXTINF:-1 tvg-logo="http://skylimitles.net:80/portal.phpmisc/logos/320/http://www.tv-logo.com/pt-data/uploads/images/logo/perviy_1_kanal.jpg" group-title="Russia", [RU] Perviy Kanal
-http://127.0.0.1:8987/iptv/%5BRU%5D+Perviy+Kanal
-#EXTINF:-1 tvg-logo="http://skylimitles.net:80/portal.phpmisc/logos/320/http://www.tv-logo.com/pt-data/uploads/images/logo/ntv_ru.jpg" group-title="Russia", [RU] RTG Int
-http://127.0.0.1:8987/iptv/%5BRU%5D+RTG+Int
-#EXTINF:-1 tvg-logo="http://skylimitles.net:80/portal.phpmisc/logos/320/http://www.tv-logo.com/pt-data/uploads/images/logo/rtr_planeta.jpg" group-title="Russia", [RU] RTR Planeta
-http://127.0.0.1:8987/iptv/%5BRU%5D+RTR+Planeta
-#EXTINF:-1 tvg-logo="http://skylimitles.net:80/portal.phpmisc/logos/320/http://www.tv-logo.com/pt-data/uploads/images/logo/rossiya_24.jpg" group-title="Russia", [RU] Russia 24
-http://127.0.0.1:8987/iptv/%5BRU%5D+Russia+24
+#EXTINF:-1,BNT 1
+http://94.156.59.247:8899/udp/239.10.1.168:30000
+#EXTINF:-1,BNT 2
+http://94.156.59.247:8899/udp/224.2.1.4:1234
+#EXTINF:-1,BNT 3
+http://94.156.59.247:8899/udp/224.2.1.25:1234
+#EXTINF:-1,BNT 4 HD
+http://94.156.59.247:8899/udp/224.156.69.173:5000
+#EXTINF:-1,Nova
+http://94.156.59.247:8899/udp/239.10.1.151:30000
+#EXTINF:-1,bTV
+http://94.156.59.247:8899/udp/239.10.1.138:30000
+#EXTINF:-1,bTV Action
+http://94.156.59.247:8899/udp/239.10.1.154:30000
+#EXTINF:-1,bTV Cinema
+http://94.156.59.247:8899/udp/224.2.1.17:1234
+#EXTINF:-1,bTV Comedy
+http://94.156.59.247:8899/udp/224.2.1.18:1234
+#EXTINF:-1,bTV Lady
+http://94.156.59.247:8899/udp/224.2.1.56:1234
+#EXTINF:-1,Da Vinci
+http://94.156.59.247:8899/udp/224.2.1.45:1234
+#EXTINF:-1,EKids
+http://94.156.59.247:8899/udp/224.156.69.64:5000
+#EXTINF:-1,Detskiy Mir - TeleClub
+http://94.156.59.247:8899/udp/224.2.1.156:1234
+#EXTINF:-1,Nick Jr
+http://94.156.59.247:8899/udp/239.1.1.239:4000
+#EXTINF:-1,Nickelodeon
+http://94.156.59.247:8899/udp/239.1.1.240:4000
+#EXTINF:-1,Disney Junior
+http://94.156.59.247:8899/udp/224.2.1.55:1234
+#EXTINF:-1,Disney Channel
+http://94.156.59.247:8899/udp/224.2.1.158:1234
+#EXTINF:-1,Boomerang
+http://94.156.59.247:8899/udp/224.2.1.43:1234
+#EXTINF:-1,National Geographic
+http://94.156.59.247:8899/udp/224.2.1.3:1234
+#EXTINF:-1,NG WILD
+http://94.156.59.247:8899/udp/224.2.1.69:1234
+#EXTINF:-1,Love Nature HD
+http://94.156.59.247:8899/udp/239.10.2.32:30000
+#EXTINF:-1,BG TOURISM HD
+http://94.156.59.247:8899/udp/224.156.69.79:5000
+#EXTINF:-1,AgroTV
+http://94.156.59.247:8899/udp/239.10.2.142:30000
+#EXTINF:-1,Discovery Channel
+http://94.156.59.247:8899/udp/224.2.1.44:1234
+#EXTINF:-1,ID Xtra
+http://94.156.59.247:8899/udp/224.2.1.28:1234
+#EXTINF:-1,Auto motor and sport
+http://94.156.59.247:8899/udp/224.2.1.36:1234
+#EXTINF:-1,AXN
+http://94.156.59.247:8899/udp/224.2.1.7:1234
+#EXTINF:-1,AXN White
+http://94.156.59.247:8899/udp/224.2.1.151:1234
+#EXTINF:-1,AXN Black
+http://94.156.59.247:8899/udp/224.2.1.152:1234
+#EXTINF:-1,FOX
+http://94.156.59.247:8899/udp/224.2.1.82:1234
+#EXTINF:-1,FOX Life
+http://94.156.59.247:8899/udp/224.2.1.8:1234
+#EXTINF:-1,FOX Crime
+http://94.156.59.247:8899/udp/224.2.1.16:1234
+#EXTINF:-1,Diema
+http://94.156.59.247:8899/udp/224.2.1.20:1234
+#EXTINF:-1,KINO NOVA
+http://94.156.59.247:8899/udp/224.2.1.22:1234
+#EXTINF:-1,Lubimoe Kino
+http://94.156.59.247:8899/udp/224.2.1.157:1234
+#EXTINF:-1,BG Music Channel
+http://94.156.59.247:8899/udp/239.10.2.116:30000
+#EXTINF:-1,MagicTV
+http://94.156.59.247:8899/udp/224.2.1.24:1234
+#EXTINF:-1,Hit Mix Music HD
+http://94.156.59.247:8899/udp/239.10.3.11:30000
+#EXTINF:-1,Balkanika
+http://94.156.59.247:8899/udp/224.2.1.66:1234
+#EXTINF:-1,Planeta HD
+http://94.156.59.247:8899/udp/239.10.1.211:30000
+#EXTINF:-1,English Club HD
+http://94.156.59.247:8899/udp/239.10.3.167:30000
+#EXTINF:-1,CNN Int.
+http://94.156.59.247:8899/udp/224.2.1.155:1234
+#EXTINF:-1,RTG Int
+http://94.156.59.247:8899/udp/224.2.2.7:1234
+#EXTINF:-1,24 Kitchen
+http://94.156.59.247:8899/udp/224.2.1.91:1234
+#EXTINF:-1,TLC
+http://94.156.59.247:8899/udp/224.2.1.9:1234
+#EXTINF:0,UGR|BNT-1
+http://myiptv.freeddns.org/ugr/bkp/bnt1
+#EXTINF:0,UGR|BTV
+http://myiptv.freeddns.org/ugr/bkp/btv
+#EXTINF:0,UGR|Nova
+http://myiptv.freeddns.org/ugr/bkp/novatv
+#EXTINF:0,UGR|DM-sat
+http://myiptv.freeddns.org/ugr/bkp/dmsat
+#EXTINF:0,UGR|TV-1000
+http://myiptv.freeddns.org/ugr/bkp/tv1000
+#EXTINF:0,UGR|MovieStar
+http://myiptv.freeddns.org/ugr/bkp/moviestar
+#EXTINF:0,UGR|Nostalgia
+http://myiptv.freeddns.org/ugr/bkp/nostalgia
+#EXTINF:0,UGR|FilmBox
+http://myiptv.freeddns.org/ugr/bkp/filmbox
+#EXTINF:0,UGR|BTV-Action
+http://myiptv.freeddns.org/ugr/bkp/btvaction
+#EXTINF:0,UGR|Kino-Nova
+http://myiptv.freeddns.org/ugr/bkp/kinonova
+#EXTINF:0,UGR|Diema
+http://myiptv.freeddns.org/ugr/bkp/diema
+#EXTINF:0,UGR|Planeta
+http://myiptv.freeddns.org/ugr/bkp/planeta
+#EXTINF:0,UGR|Discovery
+http://myiptv.freeddns.org/ugr/bkp/discovery
