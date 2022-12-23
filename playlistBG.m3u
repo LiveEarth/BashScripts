@@ -109,3 +109,73 @@ http://myiptv.freeddns.org/ugr/bkp/diema
 http://myiptv.freeddns.org/ugr/bkp/planeta
 #EXTINF:0,UGR|Discovery
 http://myiptv.freeddns.org/ugr/bkp/discovery
+#EXTINF:-1,BCU Action HD
+http://50.7.149.34:8001/play/bcu_action_hd
+#EXTINF:-1,BCU Catastrophe HD
+http://50.7.149.34:8001/play/bcu_catastrophe_hd
+#EXTINF:-1,BCU Charm HD
+http://50.7.149.34:8001/play/bcu_charm_hd
+#EXTINF:-1,BCU Cinema HD
+http://50.7.149.34:8001/play/bcu_cinema_hd
+#EXTINF:-1,BCU Cinema+ HD
+http://50.7.149.34:8001/play/bcu_cinema_plus_hd
+#EXTINF:-1,BCU Comedy HD
+http://50.7.149.34:8001/play/bcu_comedy_hd
+#EXTINF:-1,BCU Cosmo HD
+http://50.7.149.34:8001/play/bcu_cosmo_hd
+#EXTINF:-1,BCU Criminal HD
+http://50.7.149.34:8001/play/bcu_criminal_hd
+#EXTINF:-1,BCU Fantastic HD
+http://50.7.149.34:8001/play/bcu_fantastic_hd
+#EXTINF:-1,BCU FilMystic HD
+http://50.7.149.34:8001/play/bcu_filmystic_hd
+#EXTINF:-1,BCU History HD
+http://50.7.149.34:8001/play/bcu_history_hd
+#EXTINF:-1,BCU Kids 4K
+http://50.7.149.34:8001/play/bcu_kids_4k
+#EXTINF:-1,BCU Kids HD
+http://50.7.149.34:8001/play/bcu_kids_hd
+#EXTINF:-1,BCU Kids+ HD
+http://50.7.149.34:8001/play/bcu_kids_plus_hd
+#EXTINF:-1,BCU Kinorating HD
+http://50.7.149.34:8001/play/bcu_kinorating_hd
+#EXTINF:-1,BCU Little HD
+http://50.7.149.34:8001/play/bcu_little_hd
+#EXTINF:-1,BCU Marvel HD
+http://50.7.149.34:8001/play/bcu_marvel_hd
+#EXTINF:-1,BCU Premiere HD
+http://50.7.149.34:8001/play/bcu_premiere_hd
+#EXTINF:-1,BCU Premiere Ultra 4K
+http://50.7.149.34:8001/play/bcu_premiere_ultra_4K
+#EXTINF:-1,BCU RUSERIAL HD
+http://50.7.149.34:8001/play/bcu_ruserial_hd
+#EXTINF:-1,BCU Reality HD
+http://50.7.149.34:8001/play/bcu_reality_hd
+#EXTINF:-1,BCU Romantic HD
+http://50.7.149.34:8001/play/bcu_romantic_hd
+#EXTINF:-1,BCU Russian HD
+http://50.7.149.34:8001/play/bcu_russian_hd
+#EXTINF:-1,BCU Stars HD
+http://50.7.149.34:8001/play/bcu_stars_hd
+#EXTINF:-1,BCU Survival HD
+http://50.7.149.34:8001/play/bcu_survival_hd
+#EXTINF:-1,BCU TruMotion HD
+http://50.7.149.34:8001/play/bcu_trumotion_hd
+#EXTINF:-1,BCU Ultra 4K
+http://50.7.149.34:8001/play/bcu_ultra_4k
+#EXTINF:-1,BCU VHS HD
+http://50.7.149.34:8001/play/bcu_vhs_hd
+#EXTINF:-1,BCU Кинозал Premiere 1 HD
+http://50.7.149.34:8001/play/bcu_kinozal_premiere_1_hd
+#EXTINF:-1,BCU Кинозал Premiere 2 HD
+http://50.7.149.34:8001/play/bcu_kinozal_premiere_2_hd
+#EXTINF:-1,BCU Кинозал Premiere 3 HD
+http://50.7.149.34:8001/play/bcu_kinozal_premiere_3_hd
+#EXTINF:-1,BCU Мультсериал HD
+http://50.7.149.34:8001/play/bcu_multserial_hd
+#EXTINF:-1,BCU СССР HD
+http://50.7.149.34:8001/play/bcu_sssr_hd
+#EXTINF:-1,BCU Сваты HD
+http://50.7.149.34:8001/play/bcu_svaty_hd
+#EXTINF:-1,BCUMEDIA HD
+http://50.7.149.34:8001/play/bcu_media_hd
